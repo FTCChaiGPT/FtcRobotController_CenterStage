@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Autonomous(name="MotorTest", group = "Test" )
-public class Motor extends OpMode {
+public class MotorTest extends OpMode {
 
     DcMotor motor;
 
