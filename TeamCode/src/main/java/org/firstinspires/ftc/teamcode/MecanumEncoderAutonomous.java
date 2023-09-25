@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="MeccanumAutonoumEncoder", group = "Linear OpMode")
+@Autonomous(name="MeccanumAutoEncoder", group = "Auto")
 public class MecanumEncoderAutonomous extends LinearOpMode {
 
     private DcMotor left_front;
