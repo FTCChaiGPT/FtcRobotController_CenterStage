@@ -1,38 +1,50 @@
 package org.firstinspires.ftc.teamcode;
 
-import static android.os.SystemClock.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp(name = "HangOp", group = "Test")
 public class HangTest extends OpMode {
 
-    DcMotor RightHang;
-    DcMotor LeftHang;
-    DcMotor RightLift;
-    DcMotor LeftLift;
+    private Gamepad driverGamepad;
+
+    DcMotor rightActuator;
+    DcMotor leftAcutator;
+    DcMotor hangArm;
+
     @Override
     public void init() {
-        RightHang = hardwareMap.get(DcMotor.class, "RightHang");
-        LeftHang = hardwareMap.get(DcMotor.class, "LeftHang");
-        LeftHang.setDirection(DcMotor.Direction.REVERSE);
-        RightLift = hardwareMap.get(DcMotor.class, "RightLift");
-        RightLift.setDirection(DcMotor.Direction.REVERSE);
-        LeftLift = hardwareMap.get(DcMotor.class, "LeftLift");
+        rightActuator = hardwareMap.get(DcMotor.class, "rightActuator");
+        leftAcutator = hardwareMap.get(DcMotor.class, "leftAcutator");
+        hangArm = hardwareMap.get(DcMotor.class, "hangArm");
+        driverGamepad = gamepad1;
+
     }
 
     @Override
     public void loop() {
-        RightLift.setTargetPosition(45);
-        LeftLift.setTargetPosition(45);
-
-        RightHang.setPower(1);
-        LeftHang.setPower(1);
-        sleep(4650);
-        RightHang.setPower(0);
-        LeftHang.setPower(0);
-
+        if (driverGamepad.a){
+            rightActuator.setPower(0.5);
+            leftAcutator.setPower(0.5);
+        }
+        else{
+            rightActuator.setPower(0);
+            leftAcutator.setPower(0);
+        }
+        if(driverGamepad.b){
+            hangArm.setPower(0.5);
+        }
+        else{
+            hangArm.setPower(0);
+        }
+        if(driverGamepad.x){
+            hangArm.setPower(-0.5);
+        }
+        else{
+            hangArm.setPower(0);
+        }
     }
 }
