@@ -12,13 +12,13 @@ public class HangTest extends OpMode {
     private Gamepad driverGamepad;
 
     DcMotor rightActuator;
-    DcMotor leftAcutator;
+    DcMotor leftActuator;
     DcMotor hangArm;
 
     @Override
     public void init() {
         rightActuator = hardwareMap.get(DcMotor.class, "rightActuator");
-        leftAcutator = hardwareMap.get(DcMotor.class, "leftAcutator");
+        leftActuator = hardwareMap.get(DcMotor.class, "leftAcutator");
         hangArm = hardwareMap.get(DcMotor.class, "hangArm");
         driverGamepad = gamepad1;
 
@@ -26,22 +26,30 @@ public class HangTest extends OpMode {
 
     @Override
     public void loop() {
-        if (driverGamepad.a){
-            rightActuator.setPower(0.5);
-            leftAcutator.setPower(0.5);
+        if (driverGamepad.y){
+            rightActuator.setPower(1);
+            leftActuator.setPower(1);
         }
         else{
             rightActuator.setPower(0);
-            leftAcutator.setPower(0);
+            leftActuator.setPower(0);
+        }
+        if (driverGamepad.a){
+            rightActuator.setPower(-1);
+            leftActuator.setPower(-1);
+        }
+        else{
+            rightActuator.setPower(0);
+            leftActuator.setPower(0);
         }
         if(driverGamepad.b){
-            hangArm.setPower(0.5);
+            hangArm.setPower(1);
         }
         else{
             hangArm.setPower(0);
         }
         if(driverGamepad.x){
-            hangArm.setPower(-0.5);
+            hangArm.setPower(-1);
         }
         else{
             hangArm.setPower(0);

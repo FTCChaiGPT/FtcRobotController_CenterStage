@@ -3,153 +3,109 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="NoEncoderAutonomous", group = "Auto")
 public class MecanumAutonomous extends LinearOpMode {
 
-    private DcMotor left_front;
-    private DcMotor left_back;
-    private DcMotor right_front;
-    private DcMotor right_back;
-
-    private static final double COUNTS_PER_MOTOR_REV = 1440; // Number of encoder counts per motor revolution
-    private static final double WHEEL_DIAMETER_INCHES = 4.0; // Diameter of the wheel in inches
-    private static final double COUNTS_PER_INCH = COUNTS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * Math.PI);
+    private DcMotor frontLeftMotor;
+    private DcMotor frontRightMotor;
+    private DcMotor rearLeftMotor;
+    private DcMotor rearRightMotor;
 
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-        left_front = hardwareMap.get(DcMotor.class, "left_front");
-        left_back = hardwareMap.get(DcMotor.class, "left_back");
-        right_front = hardwareMap.get(DcMotor.class, "right_front");
-        right_back = hardwareMap.get(DcMotor.class, "right_back");
-        right_back.setDirection(DcMotor.Direction.REVERSE);
-        left_back.setDirection(DcMotor.Direction.REVERSE);
-        left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // Initialize motors
+        frontLeftMotor = hardwareMap.dcMotor.get("front_left_motor");
+        frontRightMotor = hardwareMap.dcMotor.get("front_right_motor");
+        rearLeftMotor = hardwareMap.dcMotor.get("rear_left_motor");
+        rearRightMotor = hardwareMap.dcMotor.get("rear_right_motor");
 
+        // Set motor directions (adjust as needed)
+        rearLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rearRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        waitForStart();
+        waitForStart(); // Wait for the start button to be pressed
 
-        backward(3, 0.5);
-        stopMotor();
-        strafe_Right(12, 1);
+        // Autonomous code
+        driveForward(0.5, 2000); // Drive forward at 50% power for 2 seconds
+        stopDriving(); // Stop the robot
+    }
 
-        stopMotor();
+    private void driveForward(double power, long duration) {
+        runtime.reset();
 
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontLeftMotor.setPower(power);
+            frontRightMotor.setPower(power);
+            rearLeftMotor.setPower(power);
+            rearRightMotor.setPower(power);
+        }
+    }
+
+    private void stopDriving() {
+        frontLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        rearLeftMotor.setPower(0);
+        rearRightMotor.setPower(0);
     }
 
 
+    private void backwards(double power, long duration) {
+        runtime.reset();
 
-    public void forward(int distance, double power) {
-
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(target);
-        left_back.setTargetPosition(target);
-        right_front.setTargetPosition(target);
-        right_back.setTargetPosition(target);
-
-
-        setMotorPower(power);
-
-        stopMotor();
-
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontLeftMotor.setPower(-power);
+            frontRightMotor.setPower(-power);
+            rearLeftMotor.setPower(-power);
+            rearRightMotor.setPower(-power);
+        }
     }
 
-    private void setMotorPower(double x) {
-        left_front.setPower(x);
-        left_back.setPower(x);
-        right_front.setPower(x);
-        right_back.setPower(x);
+    private void turnLeft (double power, long duration) {
+        runtime.reset();
+
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontRightMotor.setPower(-power);
+            rearLeftMotor.setPower(-power);
+
+        }
     }
 
-    public void backward(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(-target);
-        left_back.setTargetPosition(-target);
-        right_front.setTargetPosition(-target);
-        right_back.setTargetPosition(-target);
+    private void turnRight(double power, long duration) {
+        runtime.reset();
 
-
-        setMotorPower(power);
-
-        stopMotor();
-
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontLeftMotor.setPower(power);
+            rearRightMotor.setPower(power);
+        }
     }
 
-    public void turn_Left(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_back.setTargetPosition(-target);
-        right_front.setTargetPosition(-target);
+    private void strafeRight(double power, long duration) {
+        runtime.reset();
 
-
-        setMotorPower(power);
-
-        stopMotor();
-
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontLeftMotor.setPower(-power);
+            frontRightMotor.setPower(power);
+            rearLeftMotor.setPower(power);
+            rearRightMotor.setPower(-power);
+        }
     }
 
-    public void turn_Right(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(target);
-        right_back.setTargetPosition(target);
+    private void strafeLeft(double power, long duration) {
+        runtime.reset();
 
-
-        setMotorPower(power);
-
-        stopMotor();
-
+        while (opModeIsActive() && runtime.milliseconds() < duration) {
+            frontLeftMotor.setPower(power);
+            frontRightMotor.setPower(-power);
+            rearLeftMotor.setPower(-power);
+            rearRightMotor.setPower(power);
+        }
     }
 
-    public void strafe_Right(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(-target);
-        left_back.setTargetPosition(target);
-        right_front.setTargetPosition(target);
-        right_back.setTargetPosition(-target);
-
-
-        setMotorPower(power);
-
-        stopMotor();
-
-    }
-
-    public void strafe_Left(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(target);
-        left_back.setTargetPosition(-target);
-        right_front.setTargetPosition(-target);
-        right_back.setTargetPosition(target);
-
-        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        setMotorPower(power);
-
-        stopMotor();
-
-    }
-
-    public void stopMotor() {
-        setMotorPower(0);
-        resetEncoders();
-    }
-
-    private void resetEncoders() {
-        left_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        left_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-    }
 
 
 }

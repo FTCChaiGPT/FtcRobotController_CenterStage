@@ -40,8 +40,8 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
 
         waitForStart();
 
-        backward(3, 0.5);
-        strafe_Right(12, 1);
+        backward(38, 0.5);
+        strafe_Right(79, 1);
 
 
     }
