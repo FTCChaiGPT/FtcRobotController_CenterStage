@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+//All values of the variables target and encodercounts are reversed due to the encoders
 @Autonomous(name="MeccanumAutoEncoder", group = "Auto")
 public class MecanumEncoderAutonomous extends LinearOpMode {
 
@@ -13,9 +14,14 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
     private DcMotor right_front;
     private DcMotor right_back;
 
-    private static final double COUNTS_PER_MOTOR_REV = 1440; // Number of encoder counts per motor revolution
-    private static final double WHEEL_DIAMETER_INCHES = 4.0; // Diameter of the wheel in inches
-    private static final double COUNTS_PER_INCH = COUNTS_PER_MOTOR_REV / (WHEEL_DIAMETER_INCHES * Math.PI);
+
+
+    private static final double COUNTS_PER_MOTOR_REV = 756; // Number of encoder counts per motor revolution (1440)
+    private static final double WHEEL_DIAMETER_INCHES = 5.5;
+    private  static final double GEAR_RATIO = 1.0;
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO)/(WHEEL_DIAMETER_INCHES * Math.PI);
+
+    private static final double ROBOT_WIDTH_INCHES = 25.5; // The distance between the wheels on opposite sides
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -26,7 +32,7 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
         right_front = hardwareMap.get(DcMotor.class, "right_front");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
         right_back.setDirection(DcMotor.Direction.REVERSE);
-        left_back.setDirection(DcMotor.Direction.REVERSE);
+        right_front.setDirection(DcMotor.Direction.REVERSE);
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -38,10 +44,15 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
         right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
+
         waitForStart();
 
-        backward(38, 0.5);
-        strafe_Right(79, 1);
+        forward(40, 0.5);
+        backward(40, 0.5);
+        strafe_Left(40, 0.5);
+        strafe_Right(40, 0.5);
+        turn_Left(90, 0.5);
+        turn_Right(90, 0.5);
 
 
     }
@@ -49,12 +60,13 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
 
 
     public void forward(int distance, double power) {
+        resetEncoders();
 
         int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(target);
-        left_back.setTargetPosition(target);
-        right_front.setTargetPosition(target);
-        right_back.setTargetPosition(target);
+        left_front.setTargetPosition(-target);
+        left_back.setTargetPosition(-target);
+        right_front.setTargetPosition(-target);
+        right_back.setTargetPosition(-target);
 
         left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -64,8 +76,21 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
 
         setMotorPower(power);
 
-        stopMotor();
 
+
+        while (opModeIsActive() && left_front.isBusy()) { //Accurate measures
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
+
+        stopMotor();
     }
 
     private void setMotorPower(double x) {
@@ -76,44 +101,12 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
     }
 
     public void backward(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_front.setTargetPosition(-target);
-        left_back.setTargetPosition(-target);
-        right_front.setTargetPosition(-target);
-        right_back.setTargetPosition(-target);
+        resetEncoders();
 
-        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-        setMotorPower(power);
-
-        stopMotor();
-
-    }
-
-    public void turn_Left(int distance, double power) {
-        int target = (int) (distance * COUNTS_PER_INCH);
-        left_back.setTargetPosition(-target);
-        right_front.setTargetPosition(-target);
-
-        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-        setMotorPower(power);
-
-        stopMotor();
-
-    }
-
-    public void turn_Right(int distance, double power) {
         int target = (int) (distance * COUNTS_PER_INCH);
         left_front.setTargetPosition(target);
+        left_back.setTargetPosition(target);
+        right_front.setTargetPosition(target);
         right_back.setTargetPosition(target);
 
         left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -123,12 +116,103 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
 
 
         setMotorPower(power);
+        while (opModeIsActive() && left_front.isBusy()) {
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
 
         stopMotor();
 
     }
 
+
+    public void turn_Left(double degrees, double power) {
+        resetEncoders();
+
+        double radians = Math.toRadians(degrees);
+        double wheelDistance = radians * (ROBOT_WIDTH_INCHES / 2);
+
+        int encoderCounts = (int) (wheelDistance * COUNTS_PER_INCH);
+
+        // Set the target position for a left turn
+        left_front.setTargetPosition(encoderCounts);
+        left_back.setTargetPosition(encoderCounts);
+        right_front.setTargetPosition(-encoderCounts);
+        right_back.setTargetPosition(-encoderCounts);
+
+        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Power the motors to move towards the target position
+        setMotorPower(power);
+
+        while (opModeIsActive() && left_front.isBusy()) {
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
+
+
+        stopMotor();
+    }
+
+
+    public void turn_Right(int degrees, double power) {
+        resetEncoders();
+
+        double radians = Math.toRadians(degrees);
+        double wheelDistance = radians * (ROBOT_WIDTH_INCHES / 2);
+
+        int encoderCounts = (int) (wheelDistance * COUNTS_PER_INCH);
+
+        // Set the target position for a left turn
+        left_front.setTargetPosition(-encoderCounts);
+        left_back.setTargetPosition(-encoderCounts);
+        right_front.setTargetPosition(encoderCounts);
+        right_back.setTargetPosition(encoderCounts);
+
+        left_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Power the motors to move towards the target position
+        setMotorPower(power);
+
+        while (opModeIsActive() && left_front.isBusy()) {
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
+
+
+        stopMotor();
+    }
+
     public void strafe_Right(int distance, double power) {
+        resetEncoders();
+
         int target = (int) (distance * COUNTS_PER_INCH);
         left_front.setTargetPosition(-target);
         left_back.setTargetPosition(target);
@@ -142,12 +226,25 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
 
 
         setMotorPower(power);
+        while (opModeIsActive() && left_front.isBusy()) {
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
 
         stopMotor();
 
     }
 
     public void strafe_Left(int distance, double power) {
+        resetEncoders();
+
         int target = (int) (distance * COUNTS_PER_INCH);
         left_front.setTargetPosition(target);
         left_back.setTargetPosition(-target);
@@ -160,6 +257,17 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         setMotorPower(power);
+        while (opModeIsActive() && left_front.isBusy()) {
+            double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
+            // Adjust this threshold as needed.
+            double rampDownThreshold = 300;  // For example, start ramping down when 300 encoder counts away from target.
+
+            if (remainingDistance < rampDownThreshold) {
+                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
+                setMotorPower(rampedSpeed);
+            }
+        }
 
         stopMotor();
 
@@ -176,10 +284,10 @@ public class MecanumEncoderAutonomous extends LinearOpMode {
         right_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right_back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
     }

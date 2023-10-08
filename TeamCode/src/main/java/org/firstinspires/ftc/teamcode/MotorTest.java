@@ -23,15 +23,9 @@ public class MotorTest extends OpMode {
 
         motor.setPower(1);
 
-        if (runtime.seconds()>5){
-            motor.setPower(1);
-            if (runtime.seconds()>5){
-                motor.setPower(0);
-
-            }
         }
 
 
     }
 
-}
+
