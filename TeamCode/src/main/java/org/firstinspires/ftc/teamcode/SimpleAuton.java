@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encodercounts are reversed due to the encoders
 
-//Simple Auton, go straight to backdrop
-@Autonomous(name="MeccanumEncoder", group = "Auto")
+//Simple Auton, start at pixel position, go straight to backdrop
+@Autonomous(name="SimpleAuton", group = "Auto")
 public class SimpleAuton extends LinearOpMode {
 
     private DcMotor left_front;

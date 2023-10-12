@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
-@Autonomous(name="Autonomous2", group = "Auto")
+
+//RedPixel, start at red pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
+@Autonomous(name="RedPixel", group = "Auto")
 public class RedPixel extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
@@ -30,6 +32,7 @@ public class RedPixel extends LinearOpMode {
         waitForStart();
 
         forward(24, 0.5);
+        //Reverse intake code here
         backward(24, 0.5);
         turn_Left(96, 0.5);
         backward(96, 0.5);

@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
-@Autonomous(name="Autonomous2", group = "Auto")
+
+//BlueBackstage, start at blue backdrop position, go to spike mark, drop pixel, go back, turn left, go to backstage
+@Autonomous(name="BlueBackstage", group = "Auto")
 public class BlueBackstage extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
@@ -30,6 +32,7 @@ public class BlueBackstage extends LinearOpMode {
         waitForStart();
 
         forward(24, 0.5);
+        //Reverse intake code here
         backward(24, 0.5);
         turn_Left(96, 0.5);
         backward(48, 0.5);
