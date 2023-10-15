@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-//All values of the variables target and encodercounts are reversed due to the encoders
-
-//Simple Auton, start at pixel position, go straight to backdrop
+//All values of the variables target and encoderCounts are reversed due to the encoders
+//This autonomous starts from in
+//Autonomous Name: StraightAuton1
 @Autonomous(name="SimpleAuton", group = "Auto")
 public class SimpleAuton extends LinearOpMode {
 
@@ -16,12 +16,10 @@ public class SimpleAuton extends LinearOpMode {
     private DcMotor right_front;
     private DcMotor right_back;
 
-
-
-    private static final double COUNTS_PER_MOTOR_REV = 756; // Number of encoder counts per motor revolution (1440)
+    private static final double COUNTS_PER_MOTOR_REV = 756; //Number of encoder counts per motor revolution (1440)
     private static final double WHEEL_DIAMETER_INCHES = 5.5;
-    private  static final double GEAR_RATIO = 1.0;
-    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO)/(WHEEL_DIAMETER_INCHES * Math.PI);
+    private static final double GEAR_RATIO = 1.0;
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     private static final double ROBOT_WIDTH_INCHES = 25.5; // The distance between the wheels on opposite sides
 
@@ -33,8 +31,10 @@ public class SimpleAuton extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_front = hardwareMap.get(DcMotor.class, "right_front");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
+
         right_back.setDirection(DcMotor.Direction.REVERSE);
         right_front.setDirection(DcMotor.Direction.REVERSE);
+
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -45,18 +45,11 @@ public class SimpleAuton extends LinearOpMode {
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
-
         waitForStart();
 
-        backward(50, 0.5);
-
-
-
+        backward(100, 0.5);
 
     }
-
-
 
     public void forward(int distance, double power) {
         resetEncoders();
@@ -72,18 +65,15 @@ public class SimpleAuton extends LinearOpMode {
         right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
         setMotorPower(power);
-
-
 
         while (opModeIsActive() && left_front.isBusy()) { //Accurate measures
             double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
             // Adjust this threshold as needed.
-            double rampDownThreshold = 10;  // For example, start ramping down when 300 encoder counts away from target.
+            double rampDownThreshold = 600;  // For example, start ramping down when 300 encoder counts away from target.
 
             if (remainingDistance < rampDownThreshold) {
-                double rampedSpeed = power * (remainingDistance / rampDownThreshold);
+                double rampedSpeed = 0.5 * (power * (remainingDistance / rampDownThreshold));
                 rampedSpeed = Math.max(rampedSpeed, 0.1); // Ensure you have a minimum speed to prevent the robot from stalling.
                 setMotorPower(rampedSpeed);
             }
@@ -113,7 +103,6 @@ public class SimpleAuton extends LinearOpMode {
         right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
         setMotorPower(power);
         while (opModeIsActive() && left_front.isBusy()) {
             double remainingDistance = Math.abs(left_front.getTargetPosition() - left_front.getCurrentPosition());
@@ -130,7 +119,6 @@ public class SimpleAuton extends LinearOpMode {
         stopMotor();
 
     }
-
 
     public void turn_Left(double degrees, double power) {
         resetEncoders();
@@ -166,10 +154,8 @@ public class SimpleAuton extends LinearOpMode {
             }
         }
 
-
         stopMotor();
     }
-
 
     public void turn_Right(int degrees, double power) {
         resetEncoders();
@@ -205,7 +191,6 @@ public class SimpleAuton extends LinearOpMode {
             }
         }
 
-
         stopMotor();
     }
 
@@ -222,7 +207,6 @@ public class SimpleAuton extends LinearOpMode {
         left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
 
         setMotorPower(power);
         while (opModeIsActive() && left_front.isBusy()) {
@@ -288,9 +272,7 @@ public class SimpleAuton extends LinearOpMode {
         //right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
     }
-
 
 }
 

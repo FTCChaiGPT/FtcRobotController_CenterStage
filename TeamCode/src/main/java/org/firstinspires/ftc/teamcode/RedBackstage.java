@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
 
-//RedBackstage, start at red backdrop position, go to spike mark, drop pixel, go back, turn right, go to backstage
+//BlueBackstage, start at blue backdrop position, go to spike mark, drop pixel, go back, turn left, go to backstage
 @Autonomous(name="RedBackstage", group = "Auto")
-public class RedBackstage extends LinearOpMode {
+public class RedBackstage extends LinearOpMode{
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
@@ -33,7 +33,7 @@ public class RedBackstage extends LinearOpMode {
 
         forward(24, 0.5);
         //Reverse intake code here
-        backward(24, 0.5);
+        backward(26, 0.5);
         turn_Left(96, 0.5);
         backward(48, 0.5);
     }
@@ -90,7 +90,7 @@ public class RedBackstage extends LinearOpMode {
         setMotorPower(power);
 
 
-       slowDownAtEnd(power);
+        slowDownAtEnd(power);
 
         stopMotor();
     }

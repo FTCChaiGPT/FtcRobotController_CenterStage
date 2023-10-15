@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
-
-//RedPixel, start at red pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
-@Autonomous(name="RedPixel", group = "Auto")
+//This autonomous starts from behind the truss, close to the backstage, on the red alliance side (RIGHT SIDE for RED alliance).
+//Autonomous Name: REDBackstage2
+@Autonomous(name="RedPixel" , group = "Auto")
 public class RedPixel extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
@@ -20,26 +20,12 @@ public class RedPixel extends LinearOpMode {
     private  static final double GEAR_RATIO = 1.0;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO)/(WHEEL_DIAMETER_INCHES * Math.PI);
 
-    private static final double ROBOT_WIDTH_INCHES = 25.5; // The distance between the wheels on opposite sides
+    private static final double ROBOT_WIDTH_INCHES = 27.4; // The distance between the wheels on opposite sides
 
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-
-        Initialization();
-
-        waitForStart();
-
-        forward(24, 0.5);
-        //Reverse intake code here
-        backward(24, 0.5);
-        turn_Left(96, 0.5);
-        backward(96, 0.5);
-    }
-
-
-    public void Initialization(){
         left_front = hardwareMap.get(DcMotor.class, "left_front");
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_front = hardwareMap.get(DcMotor.class, "right_front");
@@ -57,6 +43,16 @@ public class RedPixel extends LinearOpMode {
         left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        waitForStart();
+
+        backward(45, 0.5);
+        sleep(3000);
+        backward(5, 0.5);
+        turn_Right(90, 0.4);
+        backward(78, 0.5);
+        backward(2, 0.5);
+        turn_Right(36, 0.4);
     }
 
     public void slowDownAtEnd(double p) {
@@ -88,7 +84,6 @@ public class RedPixel extends LinearOpMode {
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         setMotorPower(power);
-
 
         slowDownAtEnd(power);
 
