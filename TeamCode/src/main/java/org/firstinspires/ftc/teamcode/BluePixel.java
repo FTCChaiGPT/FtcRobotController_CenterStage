@@ -3,24 +3,32 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
 
 //BluePixel, start at blue pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
+
+
 @Autonomous(name="BluePixel", group = "Auto")
 public class BluePixel extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
     private DcMotor right_back;
+    private DcMotor intake;
+    private Servo pusher;
+    private Servo gate;
+    private Servo Front;
 
-    private static final double COUNTS_PER_MOTOR_REV = 756; //Number of encoder counts per motor revolution (1440)
-    private static final double WHEEL_DIAMETER_INCHES = 5.5;
+    private static final double COUNTS_PER_MOTOR_REV = 750; //Number of encoder counts per motor revolution (1440)
+    private static final double WHEEL_DIAMETER_INCHES = 3.75;
     private  static final double GEAR_RATIO = 1.0;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO)/(WHEEL_DIAMETER_INCHES * Math.PI);
 
-    private static final double ROBOT_WIDTH_INCHES = 25.5; // The distance between the wheels on opposite sides
+    private static final double ROBOT_WIDTH_INCHES = 21.5; // The distance between the wheels on opposite sides
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -31,11 +39,21 @@ public class BluePixel extends LinearOpMode {
 
         waitForStart();
 
-        forward(24, 0.5);
-        //Reverse intake code here
-        backward(24, 0.5);
-        turn_Right(96, 0.5);
-        backward(96, 0.5);
+        forward(22, 0.25);
+        Front.setPosition(180);
+        reverse_intake(45, 0.5);
+        //Adheesh's code is working now..yay!
+        //sleep(3000);
+        backward(26, 0.5);
+        strafe_Right(22.5F,0.5);
+        forward(48, 0.5);
+        turn_Right(90, 0.4);
+        backward(102, 0.5);
+        backward(2, 0.5);
+        turn_Left(36, 0.4);
+        backward(3, 0.5);
+        gate.setPosition(45);
+        gate.setPosition(-45);
     }
 
 
@@ -44,19 +62,49 @@ public class BluePixel extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_front = hardwareMap.get(DcMotor.class, "right_front");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
-
-        right_back.setDirection(DcMotor.Direction.REVERSE);
-        right_front.setDirection(DcMotor.Direction.REVERSE);
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        pusher = hardwareMap.get(Servo.class, "pusher");
+        gate = hardwareMap.get(Servo.class, "gate");
+        Front = hardwareMap.get(Servo.class, "front");
 
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+         right_back.setDirection(DcMotor.Direction.REVERSE);
+
         left_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    public void intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(-target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
+    }
+    public void reverse_intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
     }
 
     public void slowDownAtEnd(double p) {
@@ -86,6 +134,10 @@ public class BluePixel extends LinearOpMode {
         left_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_front.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right_back.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Left Motor velocity is", left_front.getPower());
+        telemetry.addData("Right Motor velocity is", right_front.getPower());
+        telemetry.update();
 
         setMotorPower(power);
 
@@ -177,7 +229,7 @@ public class BluePixel extends LinearOpMode {
         stopMotor();
     }
 
-    public void strafe_Right(int distance, double power) {
+    public void strafe_Right(float distance, double power) {
         resetEncoders();
 
         int target = (int) (distance * COUNTS_PER_INCH);

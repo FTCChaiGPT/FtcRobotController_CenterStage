@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
@@ -14,6 +15,10 @@ public class RedPixel extends LinearOpMode {
     private DcMotor left_back;
     private DcMotor right_front;
     private DcMotor right_back;
+    private DcMotor intake;
+    private Servo pusher;
+    private Servo gate;
+    private Servo Front;
 
     private static final double COUNTS_PER_MOTOR_REV = 756; //Number of encoder counts per motor revolution (1440)
     private static final double WHEEL_DIAMETER_INCHES = 5.5;
@@ -30,6 +35,10 @@ public class RedPixel extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_front = hardwareMap.get(DcMotor.class, "right_front");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        pusher = hardwareMap.get(Servo.class, "pusher");
+        gate = hardwareMap.get(Servo.class, "gate");
+        Front = hardwareMap.get(Servo.class, "front");
 
         right_back.setDirection(DcMotor.Direction.REVERSE);
         right_front.setDirection(DcMotor.Direction.REVERSE);
@@ -46,13 +55,21 @@ public class RedPixel extends LinearOpMode {
 
         waitForStart();
 
-        backward(45, 0.5);
-        sleep(3000);
-        backward(5, 0.5);
-        turn_Right(90, 0.4);
-        backward(78, 0.5);
+        forward(28, 0.5);
+        Front.setPosition(180);
+        reverse_intake(45,0.5);
+        //hi :), :(, :), :(
+        backward(26, 0.5);
+        strafe_Left(22.5F,0.5);
+        forward(48, 0.5);
+        turn_Left(90, 0.4);
+        backward(102, 0.5);
         backward(2, 0.5);
         turn_Right(36, 0.4);
+        backward(3, 0.5);
+        gate.setPosition(45);
+        gate.setPosition(-45);
+
     }
 
     public void slowDownAtEnd(double p) {
@@ -67,6 +84,42 @@ public class RedPixel extends LinearOpMode {
                 setMotorPower(rampedSpeed);
             }
         }
+    }
+
+    public void outtake(int distance, double power){
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        //outtake.setTargetPosition(target);
+
+        setMotorPower(power);
+
+        stopMotor();
+    }
+
+    public void intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(-target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
+    }
+    public void reverse_intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
     }
 
     public void forward(int distance, double power) {
@@ -172,7 +225,7 @@ public class RedPixel extends LinearOpMode {
         stopMotor();
     }
 
-    public void strafe_Right(int distance, double power) {
+    public void strafe_Right(float distance, double power) {
         resetEncoders();
 
         int target = (int) (distance * COUNTS_PER_INCH);
@@ -193,7 +246,7 @@ public class RedPixel extends LinearOpMode {
 
     }
 
-    public void strafe_Left(int distance, double power) {
+    public void strafe_Left(float distance, double power) {
         resetEncoders();
 
         int target = (int) (distance * COUNTS_PER_INCH);

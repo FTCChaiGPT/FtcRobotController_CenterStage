@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
@@ -14,13 +15,17 @@ public class BlueBackstage extends LinearOpMode {
     private DcMotor left_back;
     private DcMotor right_front;
     private DcMotor right_back;
+    private DcMotor intake;
+    private Servo pusher;
+    private Servo gate;
+    private Servo Front;
 
     private static final double COUNTS_PER_MOTOR_REV = 756; //Number of encoder counts per motor revolution (1440)
     private static final double WHEEL_DIAMETER_INCHES = 5.5;
     private  static final double GEAR_RATIO = 1.0;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_RATIO)/(WHEEL_DIAMETER_INCHES * Math.PI);
 
-    private static final double ROBOT_WIDTH_INCHES = 25.5; // The distance between the wheels on opposite sides
+    private static final double ROBOT_WIDTH_INCHES = 27.4; // The distance between the wheels on opposite sides
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -31,11 +36,14 @@ public class BlueBackstage extends LinearOpMode {
 
         waitForStart();
 
-        forward(24, 0.5);
-        //Reverse intake code here
-        backward(24, 0.5);
-        turn_Left(96, 0.5);
         backward(48, 0.5);
+        Front.setPosition(180);
+        reverse_intake(45, 0.5);
+        forward(43, 0.5);
+        turn_Left(90, 0.4);
+        backward(36, 0.5);
+        gate.setPosition(45);
+        gate.setPosition(-45);
     }
 
 
@@ -44,6 +52,10 @@ public class BlueBackstage extends LinearOpMode {
         left_back = hardwareMap.get(DcMotor.class, "left_back");
         right_front = hardwareMap.get(DcMotor.class, "right_front");
         right_back = hardwareMap.get(DcMotor.class, "right_back");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        pusher = hardwareMap.get(Servo.class, "pusher");
+        gate = hardwareMap.get(Servo.class, "gate");
+        Front = hardwareMap.get(Servo.class, "front");
 
         right_back.setDirection(DcMotor.Direction.REVERSE);
         right_front.setDirection(DcMotor.Direction.REVERSE);
@@ -72,6 +84,32 @@ public class BlueBackstage extends LinearOpMode {
             }
         }
     }
+
+    public void intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(-target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
+    }
+    public void reverse_intake(int distance, double power) {
+        resetEncoders();
+
+        int target = (int) (distance * COUNTS_PER_INCH);
+        intake.setTargetPosition(target);
+
+        setMotorPower(power);
+
+        stopMotor();
+
+
+    }
+
 
     public void forward(int distance, double power) {
         resetEncoders();
