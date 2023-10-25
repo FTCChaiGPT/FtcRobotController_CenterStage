@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="FullDriveCode", group = "test")
-public class IntakeMechanism extends LinearOpMode {
+public class FullDriveCode extends LinearOpMode {
     private DcMotor intake;
     private Servo pusher;
     private Servo gate;
