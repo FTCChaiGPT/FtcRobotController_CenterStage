@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //BluePixel, start at blue pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
 
 
-@Autonomous(name="BluePixel", group = "Auto")
-public class BluePixel extends LinearOpMode {
+@Autonomous(name="IntakeAuton", group = "Auto")
+public class IntakeAuton extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
@@ -30,6 +30,13 @@ public class BluePixel extends LinearOpMode {
 
     private static final double ROBOT_WIDTH_INCHES = 18.9; // The distance between the wheels on opposite sides
 
+    private final double MIN_POSITION = 0.0; // assuming 0.0 is 0 degrees
+    private final double MAX_POSITION = 270.0/270.0; // normalized for 270 degrees
+    private final double LOWER_LIMIT = 250.0/270.0; // normalized for 250 degrees
+
+    // A flag to track the toggle state for 'b' button
+    private boolean isAtMaxPosition = false;
+
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -39,27 +46,18 @@ public class BluePixel extends LinearOpMode {
 
         waitForStart();
 
-       forward(22, 0.25);
+        Front.setPosition(MIN_POSITION);
+        forward(18, 0.5);
         intake.setPower(0.4);
-        //Adheesh's code is working now..yay!
-        //sleep(3000);
-        backward(20, 0.5);
-        strafe_Right(13.5F,0.5);
-        forward(40, 0.5);
-        turn_Right(90, 0.5);
-        backward(73, 0.5);
-        gate.setPosition(-0.5);
-        sleep(200);
-        pusher.setPosition(1);
-        sleep(200);
-        pusher.setPosition(0.0);
-        sleep(200);
-        pusher.setPosition(1);
-        sleep(200);
-        pusher.setPosition(0.0);
-        sleep(200);
-        gate.setPosition(0.5);
-        Front.setPosition(1);
+        turn_Right(90, 0.4);
+        Front.setPosition(0.65);
+        Front.setPosition(MIN_POSITION);
+        Front.setPosition(0.65);
+
+
+
+
+
     }
 
 
@@ -301,5 +299,6 @@ public class BluePixel extends LinearOpMode {
     }
 
 }
+
 
 
