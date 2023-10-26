@@ -27,7 +27,7 @@ public class FullDriveCode extends LinearOpMode {
     private final double MAX_POSITION = 270.0/270.0; // normalized for 270 degrees
     private final double LOWER_LIMIT = 250.0/270.0; // normalized for 250 degrees
 
-    // A flag to track the toggle state for 'b' button
+    //A flag to track the toggle state for 'b' button
     private boolean isAtMaxPosition = false;
 
     @Override
