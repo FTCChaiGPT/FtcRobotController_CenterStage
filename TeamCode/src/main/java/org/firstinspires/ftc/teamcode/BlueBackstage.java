@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //BluePixel, start at blue pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
 
 
-@Autonomous(name="BluekBackstage", group = "Auto")
+@Autonomous(name="BlueBackstage", group = "Auto")
 public class BlueBackstage extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
