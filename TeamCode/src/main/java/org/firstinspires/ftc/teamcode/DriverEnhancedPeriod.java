@@ -21,12 +21,11 @@ public class DriverEnhancedPeriod extends OpMode {
     private DcMotor right_front;//
     private DcMotor right_back;//
     private Servo launcher;//
-    double OneValue = 1;
-    private final double MIN_POSITION = 0.0; // assuming 0.0 is 0 degrees
-    private final double MAX_POSITION = 240.0/270.0; // normalized for 270 degrees
-    private final double LOWER_LIMIT = 220.0/270.0; // normalized for 250 degrees
+    private int customCaliberation = 1;
+    private final double MAX_POSITION = 220.0/270.0; // normalized for 270 degrees
+    private final double LOWER_LIMIT = 210.0/270.0; // normalized for 250 degrees
     private boolean isAtMaxPosition = false;
-    private int noLAG = 0;
+
     @Override
     public void init() {
         launcher = hardwareMap.servo.get("launcher");
@@ -83,23 +82,33 @@ public class DriverEnhancedPeriod extends OpMode {
             gate.setPosition(0.5);
             telemetry.addLine("Pixel Has Been Dropped.");
         }
-        //we removed buffer because there were unnecessary lines of code(the if else statements)
 
-
-        // When gamepad button 'a' is pressed, move to 270 degrees
         if (gamepad2.x) {
             Front.setPosition(MAX_POSITION);
             isAtMaxPosition = true; // Update the toggle state
         }
 
-        // When gamepad button 'right_bumper' is pressed, alternate between 250 and 270 degrees
+        if (gamepad2.right_bumper) {
+            customCaliberation = 1;
+        }
+        else {
+            customCaliberation = 0;
+        }
+
         if (gamepad2.right_bumper) {
             if (!isAtMaxPosition) {
-                Front.setPosition(1);
+                Front.setPosition(MAX_POSITION);
                 isAtMaxPosition = true;
             } else {
-                Front.setPosition(0.65);
+                Front.setPosition(LOWER_LIMIT);
                 isAtMaxPosition = false;
+            }
+        }
+        else if (customCaliberation == 1) {
+            if (isAtMaxPosition == true) {
+                Front.setPosition(MAX_POSITION);
+            } else {
+                Front.setPosition(LOWER_LIMIT);
             }
         }
     }
@@ -120,13 +129,13 @@ public class DriverEnhancedPeriod extends OpMode {
 
     public void HangPlusDrone() {
         if (gamepad2.dpad_up) {
-            hangOrientor.setPower(0.5);
-            sleep(900);
+            hangOrientor.setPower(1);
+            sleep(475);
             hangOrientor.setPower(0);
         }
         if (gamepad2.dpad_down) {
-            hangOrientor.setPower(-0.5);
-            sleep(1050);
+            hangOrientor.setPower(-1);
+            sleep(525);
             hangOrientor.setPower(0);
         }
         if (gamepad2.left_stick_y < -0.1 && gamepad2.right_stick_y < -0.1) {
