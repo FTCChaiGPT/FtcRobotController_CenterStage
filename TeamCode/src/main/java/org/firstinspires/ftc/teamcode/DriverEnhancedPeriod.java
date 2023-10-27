@@ -140,7 +140,7 @@ public class DriverEnhancedPeriod extends OpMode {
             rightHang.setPower(0);
             leftHang.setPower(0);
         }
-        if (gamepad2.dpad_left) {
+        if (gamepad2.left_trigger > 0.08 && gamepad2.right_trigger > 0.08) {
             launcher.setPosition(-0.3);
         }
     }
