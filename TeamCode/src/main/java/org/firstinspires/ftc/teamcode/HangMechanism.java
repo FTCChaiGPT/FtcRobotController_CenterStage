@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name="MeccanumDrivetrain", group = "Driver")
+@TeleOp(name="Hang", group = "Driver")
 public class HangMechanism extends OpMode {
     private DcMotor hangOrientor;//
     private DcMotor rightHang;//

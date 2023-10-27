@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="IntakeTest", group = "test")
+@TeleOp(name="IntakeFinal" +
+        "", group = "test")
 public class IntakeTest extends LinearOpMode {
     private DcMotor intake;
     private Servo pusher;
