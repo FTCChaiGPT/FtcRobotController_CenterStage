@@ -4,13 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="Meccanum", group = "Driver")
-public class MecanumDrivetrain extends OpMode {
 
+
+@TeleOp(name="MeccanumDrivetrain", group = "Driver")
+public class MecanumDrivetrain extends OpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
     private DcMotor right_back;
+
 
     @Override
     public void init() {
@@ -30,13 +32,13 @@ public class MecanumDrivetrain extends OpMode {
 
     @Override
     public void loop() {
-        left_front.setPower(-gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x);
-        left_back.setPower(-gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x);
-        right_front.setPower(-gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x);
-        right_back.setPower(-gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x);
+        left_front.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x);
+        left_back.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x);
+        right_front.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x);
+        right_back.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x);
+
 
     }
 
-    }
-
+}
 
