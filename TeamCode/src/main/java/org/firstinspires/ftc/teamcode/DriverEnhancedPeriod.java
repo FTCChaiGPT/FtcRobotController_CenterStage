@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "DrivetrainFinal", group = "iterativeOpMode")
 public class DriverEnhancedPeriod extends OpMode {
@@ -25,6 +26,7 @@ public class DriverEnhancedPeriod extends OpMode {
     private final double MAX_POSITION = 220.0/270.0; // normalized for 270 degrees
     private final double LOWER_LIMIT = 210.0/270.0; // normalized for 250 degrees
     private boolean isAtMaxPosition = false;
+
 
     @Override
     public void init() {
@@ -126,11 +128,10 @@ public class DriverEnhancedPeriod extends OpMode {
 
 
 
-
     public void HangPlusDrone() {
         if (gamepad2.dpad_up) {
             hangOrientor.setPower(1);
-            sleep(325);
+            sleep(450);
             hangOrientor.setPower(0);
         }
         if (gamepad2.dpad_down) {
@@ -150,7 +151,7 @@ public class DriverEnhancedPeriod extends OpMode {
             leftHang.setPower(0);
         }
         if (gamepad2.left_trigger > 0.08 && gamepad2.right_trigger > 0.08) {
-            launcher.setPosition(-0.3);
+            launcher.setPosition(-1);
         }
     }
 
