@@ -30,6 +30,8 @@ public class BlueBackstage extends LinearOpMode {
 
     private static final double ROBOT_WIDTH_INCHES = 18.9; // The distance between the wheels on opposite sides
 
+    private final double MAX_POSITION = 220.0/270.0; // normalized for 270 degrees
+
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -57,7 +59,10 @@ public class BlueBackstage extends LinearOpMode {
         pusher.setPosition(0.0);
         sleep(200);
         gate.setPosition(0.5);
-        Front.setPosition(1);
+        sleep(200);
+        gate.setPosition(0);
+        sleep(200);
+        Front.setPosition(MAX_POSITION);
     }
 
 

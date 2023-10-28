@@ -118,10 +118,10 @@ public class DriverEnhancedPeriod extends OpMode {
 
 
     public void DriveTrain() {
-        left_front.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x);
-        left_back.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x);
-        right_front.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x);
-        right_back.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x);
+        left_front.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x);
+        left_back.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x);
+        right_front.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x);
+        right_back.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x);
     }
 
 
@@ -130,7 +130,7 @@ public class DriverEnhancedPeriod extends OpMode {
     public void HangPlusDrone() {
         if (gamepad2.dpad_up) {
             hangOrientor.setPower(1);
-            sleep(475);
+            sleep(325);
             hangOrientor.setPower(0);
         }
         if (gamepad2.dpad_down) {
