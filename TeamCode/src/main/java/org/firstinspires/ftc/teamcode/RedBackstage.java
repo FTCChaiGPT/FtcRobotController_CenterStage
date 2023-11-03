@@ -299,5 +299,3 @@ public class RedBackstage extends LinearOpMode {
     }
 
 }
-
-

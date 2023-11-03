@@ -6,13 +6,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+
 //All values of the variables target and encoderCounts are reversed due to the encoders
 
 //BluePixel, start at blue pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
 
 
-@Autonomous(name="BlueBackstage", group = "Auto")
-public class BlueBackstage extends LinearOpMode {
+@Autonomous(name="RedBackstageCamera", group = "Auto")
+public class RedBackstageCamera extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
@@ -22,6 +25,12 @@ public class BlueBackstage extends LinearOpMode {
     private Servo gate;
     private Servo Front;
 
+    boolean pixel_detected = false;
+
+
+    TfodProcessor myTfodProcessor;
+    VisionPortal myVisionPortal;
+
     private static final double COUNTS_PER_MOTOR_REV = 750; //Number of encoder counts per motor revolution (1440)
     private static final double WHEEL_DIAMETER_INCHES = 3.75;
     private  static final double GEAR_RATIO = 1.0;
@@ -29,7 +38,7 @@ public class BlueBackstage extends LinearOpMode {
 
     private static final double ROBOT_WIDTH_INCHES = 18.9; // The distance between the wheels on opposite sides
 
-    private final double MAX_POSITION = 220.0/270.0; // normalized for 270 degrees
+    private CameraAuton cameraAuton;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -38,14 +47,56 @@ public class BlueBackstage extends LinearOpMode {
 
         Initialization();
 
+
         waitForStart();
 
-        forward(23, 0.25);
-        intake.setPower(0.4);
+        forward(8, 0.25);
+        sleep(40);
+        while (opModeIsActive()){
+            pixel_detected = cameraAuton.detect();
+            telemetry.addData("Pixel detected", pixel_detected);
+            sleep(40);
+            if (pixel_detected){
+                backward(5, 0.5);
+            }
+            else {
+                stopMotor();
+            }
+            telemetry.addData("Came out of loop", "");
+        }
+
+
+        /*if (pixel_confidence >= 0.85){
+                intake.setPower(1);
+                forward(10, 0.25);
+                telemetry.addData("Pixel Found", "");
+        }
+        else{
+            intake.setPower(1);
+            backward(5, 0.25);
+            telemetry.addData("Pixel Lost", "");
+        }*/
+        /*else {
+            strafe_Left(5, 0.5);
+            if(pixel_found){
+                intake.setPower(1);
+                forward(8, 0.25);
+                telemetry.addData("Pixel Also Found", "");
+            }
+            else{
+                turn_Left(90, 0.4);
+                intake.setPower(1);
+                forward(8, 0.25);
+                telemetry.addData("Pixel Also Also Found", "");
+            }
+        }*/
+
+
+
         //Adheesh's code is working now..yay!
         //sleep(3000);
-        backward(19, 0.5);
-        turn_Right(90, 0.5);
+        /*backward(19, 0.5);
+        turn_Left(90, 0.5);
         backward(28, 0.5);
         gate.setPosition(-0.5);
         sleep(200);
@@ -58,10 +109,8 @@ public class BlueBackstage extends LinearOpMode {
         pusher.setPosition(0.0);
         sleep(200);
         gate.setPosition(0.5);
-        sleep(200);
-        gate.setPosition(0);
-        sleep(200);
-        Front.setPosition(MAX_POSITION);
+        Front.setPosition(1);*/
+
     }
 
 
@@ -89,6 +138,11 @@ public class BlueBackstage extends LinearOpMode {
         left_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_front.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right_back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        cameraAuton = new CameraAuton(telemetry, hardwareMap);
+        cameraAuton.Init();
+
+
     }
 
 
