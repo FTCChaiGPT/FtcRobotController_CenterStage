@@ -398,5 +398,3 @@ public class RedBackstageCamera extends LinearOpMode {
     }
 
 }
-
-
