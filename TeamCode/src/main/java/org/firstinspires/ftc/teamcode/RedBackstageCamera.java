@@ -50,20 +50,61 @@ public class RedBackstageCamera extends LinearOpMode {
 
         waitForStart();
 
-        forward(8, 0.25);
-        sleep(40);
-        while (opModeIsActive()){
+        forward(2, 0.25);
+        strafe_Right(6.5F, 0.5);
+        forward(4, 0.25);
+        //backward(3, 0.25);
+        sleep(2000);
+        pixel_detected = false;
+        while (opModeIsActive() && !pixel_detected){
+            sleep(100);
             pixel_detected = cameraAuton.detect();
             telemetry.addData("Pixel detected", pixel_detected);
-            sleep(40);
-            if (pixel_detected){
-                backward(5, 0.5);
+            if (pixel_detected) {
+                break;
+            }
+            else{
+                telemetry.addData("Center Spike Mark", pixel_detected);
+                strafe_Left(9, 0.5);
+                forward(6, 0.25);
+                sleep(2000);//Change to 100
+                pixel_detected = cameraAuton.detect();
+                telemetry.addData("Pixel detected", pixel_detected);
+                if (pixel_detected) {
+                    sleep(2000);
+                    intake.setPower(1);
+                    sleep(1000);
+                    intake.setPower(0);
+                    backward(3, 0.5);
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            /*if (pixel_detected){
+                telemetry.addData("Pixel Detected", pixel_detected);
+                forward(5, 0.5);
+                intake.setPower(-1);
+                intake.setPower(0);
+                break;
             }
             else {
-                stopMotor();
-            }
-            telemetry.addData("Came out of loop", "");
+                telemetry.addData("Pixel Not Detected", pixel_detected);
+                strafe_Left(5, 0.5);
+                break;
+            }*/
         }
+
+
+                telemetry.addData("Right Spike", "");
+                sleep(3000);
+                forward(8, 0.5);
+                intake.setPower(1);
+                sleep(1000);
+                intake.setPower(0);
+                backward(5, 0.75);
+
 
 
         /*if (pixel_confidence >= 0.85){
