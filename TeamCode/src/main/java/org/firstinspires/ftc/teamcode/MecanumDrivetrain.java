@@ -16,10 +16,10 @@ public class MecanumDrivetrain extends OpMode {
 
     @Override
     public void init() {
-        left_front = hardwareMap.get(DcMotor.class, "left_front");
-        left_back = hardwareMap.get(DcMotor.class, "left_back");
-        right_front = hardwareMap.get(DcMotor.class, "right_front");
-        right_back = hardwareMap.get(DcMotor.class, "right_back");
+        left_front = hardwareMap.get(DcMotor.class, "leftFront");
+        left_back = hardwareMap.get(DcMotor.class, "leftBack");
+        right_front = hardwareMap.get(DcMotor.class, "rightFront");
+        right_back = hardwareMap.get(DcMotor.class, "rightBack");
         right_front.setDirection(DcMotor.Direction.REVERSE);
         right_back.setDirection(DcMotor.Direction.REVERSE);
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -36,8 +36,6 @@ public class MecanumDrivetrain extends OpMode {
         left_back.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x);
         right_front.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x);
         right_back.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x);
-
-
     }
 
 }

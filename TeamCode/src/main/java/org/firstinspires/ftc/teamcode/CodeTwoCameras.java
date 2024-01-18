@@ -14,8 +14,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 //BluePixel, start at blue pixel position, go to spike mark, drop pixel, go back, turn left, go to backstage
 
 
-@Autonomous(name="RedBackstageCamera", group = "Auto")
-public class RedBackstageCamera extends LinearOpMode {
+@Autonomous(name="TwoCamera", group = "Auto")
+public class CodeTwoCameras extends LinearOpMode {
     private DcMotor left_front;
     private DcMotor left_back;
     private DcMotor right_front;
@@ -39,6 +39,7 @@ public class RedBackstageCamera extends LinearOpMode {
     private static final double ROBOT_WIDTH_INCHES = 18.9; // The distance between the wheels on opposite sides
 
     private CameraAuton cameraAuton;
+    private CameraAuton secondCameraAuton;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -59,6 +60,8 @@ public class RedBackstageCamera extends LinearOpMode {
         while (opModeIsActive() && !pixel_detected){
             sleep(100);
             pixel_detected = cameraAuton.detect();
+            boolean firstCameraDetected = cameraAuton.detect();
+            boolean secondCameraDetected = secondCameraAuton.detect();
             telemetry.addData("Pixel detected", pixel_detected);
             if (pixel_detected) {
                 break;
@@ -102,13 +105,13 @@ public class RedBackstageCamera extends LinearOpMode {
         }
 
 
-                telemetry.addData("Right Spike", "");
-                sleep(3000);
-                forward(8, 0.5);
-                intake.setPower(1);
-                sleep(1000);
-                intake.setPower(0);
-                backward(5, 0.75);
+        telemetry.addData("Right Spike", "");
+        sleep(3000);
+        forward(8, 0.5);
+        intake.setPower(1);
+        sleep(1000);
+        intake.setPower(0);
+        backward(5, 0.75);
 
 
 
@@ -183,6 +186,8 @@ public class RedBackstageCamera extends LinearOpMode {
 
         cameraAuton = new CameraAuton(telemetry, hardwareMap);
         cameraAuton.Init();
+        secondCameraAuton = new CameraAuton(telemetry, hardwareMap);
+        secondCameraAuton.Init();
 
 
     }
