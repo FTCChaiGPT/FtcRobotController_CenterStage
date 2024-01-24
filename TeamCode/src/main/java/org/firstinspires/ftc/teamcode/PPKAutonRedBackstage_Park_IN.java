@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 //import android.widget.Switch;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -23,7 +24,9 @@ import java.util.List;
 //import com.qualcomm.robotcore.util.ElapsedTime;
 //import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
+// 12/2 Auton
 @Autonomous(name="PPKAutonRedBackstage_Park_IN", group = "Auto")
+@Disabled
 public class PPKAutonRedBackstage_Park_IN extends LinearOpMode {
     private DcMotor leftFront_motor;
 

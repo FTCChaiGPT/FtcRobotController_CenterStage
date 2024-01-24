@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //All values of the variables target and encoderCounts are reversed due to the encoders
 //This autonomous starts from in
-//Autonomous Name: StraightAuton1
+//Autonomous Name: This one does everything using encoders on drive train. Test Auton
 @Autonomous(name="SimpleAuton", group = "Auto")
+@Disabled
 public class SimpleAuton extends LinearOpMode {
 
     private DcMotor left_front;
