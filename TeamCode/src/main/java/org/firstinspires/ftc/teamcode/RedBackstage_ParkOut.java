@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RedBackstage_ParkOut.ParkingLocation.OUT;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,8 +29,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name="RedBackstage", group = "Auto")
-public class RedBackstage extends LinearOpMode {
+@Autonomous(name="RedBackstage_ParkOut", group = "Auto")
+public class RedBackstage_ParkOut extends LinearOpMode {
 
     public enum PropPostition {
         LEFT, CENTER, RIGHT, UNKNOWN
@@ -38,6 +40,7 @@ public class RedBackstage extends LinearOpMode {
         IN, OUT
 
     }
+
     public ParkingLocation parkLocation;
 
     public PropPostition spikePosition;
@@ -50,48 +53,48 @@ public class RedBackstage extends LinearOpMode {
     SamplePipeline pipeline;
 
     //Set Gyro and Drive related variables
-    private DcMotor     frontLeft   = null;
-    private DcMotor     frontRight  = null;
-    private DcMotor     backLeft   = null;
-    private DcMotor     backRight  = null;
-    private DcMotor     intake     = null;
-    private Servo       wristServo = null;
+    private DcMotor frontLeft = null;
+    private DcMotor frontRight = null;
+    private DcMotor backLeft = null;
+    private DcMotor backRight = null;
+    private DcMotor intake = null;
+    private Servo wristServo = null;
     private CRServo leftWristServo;
     private CRServo rightWristServo;
     private DcMotor rightLinearSlide_motor;
     private DcMotor leftLinearSlide_motor;
-    private IMU         imu        = null;      // Control/Expansion Hub IMU
-    private double      headingError  = 0;
+    private IMU imu = null;      // Control/Expansion Hub IMU
+    private double headingError = 0;
 
     // These variable are declared here (as class members) so they can be updated in various methods,
     // but still be displayed by sendTelemetry()
-    private double  targetHeading = 0;
-    private double  driveSpeed    = 0;
-    private double  turnSpeed     = 0;
-    private double strafeSpeed    = 0;
-    private double  leftSpeed     = 0;
-    private double  rightSpeed    = 0;
-    private int     leftTarget    = 0;
-    private int     rightTarget   = 0;
+    private double targetHeading = 0.5;
+    private double driveSpeed = 0.8;
+    private double turnSpeed = 0.5;
+    private double strafeSpeed = 0.4;
+    private double leftSpeed = 0;
+    private double rightSpeed = 0;
+    private int leftTarget = 0;
+    private int rightTarget = 0;
 
     private ElapsedTime timer;
-    static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;   // eg: GoBILDA 312 RPM Yellow Jacket
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 3.78;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double COUNTS_PER_MOTOR_REV = 537.7;   // eg: GoBILDA 312 RPM Yellow Jacket
+    static final double DRIVE_GEAR_REDUCTION = 1.0;     // No External Gearing.
+    static final double WHEEL_DIAMETER_INCHES = 3.78;     // For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double ROBOT_DIAMETER_INCHES = 27; // Adjust to your robot's diameter
     // The distance between the wheels on opposite sides (diagonal)
-    static final double     DRIVE_SPEED = 0.995;     // Max driving speed for better distance accuracy.
-    static final double  TURN_IMU_SPEED =0.3;
-    static final double     TURN_SPEED = 0.4;
-    static final double     STRAFE_SPEED  = 0.4;
-    static final double     HEADING_THRESHOLD  = 1.0 ;
-    static final double     LINEAR_SLIDE_POWER = 0.8;
-    static final double     LINEAR_SLIDE_TICKS = 28 * COUNTS_PER_INCH; //distance * encoder counts_per_inch
+    static final double DRIVE_SPEED = 0.8;     // Max driving speed for better distance accuracy.
+    static final double TURN_IMU_SPEED = 0.2;
+    static final double TURN_SPEED = 0.5;
+    static final double STRAFE_SPEED = 0.3;
+    static final double HEADING_THRESHOLD = 1.0;
+    static final double LINEAR_SLIDE_POWER = 0.8;
+    static final double LINEAR_SLIDE_TICKS = 25 * COUNTS_PER_INCH; //distance * encoder counts_per_inch
 
 
-    static final double     P_TURN_GAIN  = 0.1;     // Larger is more responsive, but also less stable
-    static final double     P_DRIVE_GAIN  = 0.03;     // Larger is more responsive, but also less stable
+    static final double P_TURN_GAIN = 0.1;     // Larger is more responsive, but also less stable
+    static final double P_DRIVE_GAIN = 0.1;     // Larger is more responsive, but also less stable
 
     private ElapsedTime runtime = new ElapsedTime();
     ElapsedTime linearSlideTimer;
@@ -100,10 +103,10 @@ public class RedBackstage extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry.addLine("Please ensure to run the camera test before you run this part");
         telemetry.update();
-        //CameraInitialization();
+        CameraInitialization();
         DriveInitialization();
         //CameraInitialization();
-        //pipeline.startProcessing = false;
+        pipeline.startProcessing = false;
 
         telemetry.addLine("All Initialization Completed");
         telemetry.update();
@@ -117,61 +120,52 @@ public class RedBackstage extends LinearOpMode {
         }
 
         waitForStart();
-        spikePosition = PropPostition.CENTER;
-        runAuton(spikePosition);
-        sleep(2000);
-    }
+//        spikePosition = PropPostition.RIGHT;
+//
 
 
 //        telemetry.clear();
-//
-//        pipeline.startProcessing = true;
-//        firstContourDetected = false;
-//
-//        long startTime = System.currentTimeMillis();
-//
-//        while (opModeIsActive() && !firstContourDetected) {
-//            // Identify on which pixel is the prop on.
-//            spikePosition = pipeline.getLastDetectedPosition();
-//
-//            if (spikePosition != PropPostition.UNKNOWN) {
-//                firstContourDetected = true;
-//                telemetry.addLine("Prop Detected");
-//                telemetry.addData("Position", spikePosition);
-//                telemetry.update();
-//                //sleep(1000);
-//                webcam.stopStreaming();
-//            }
-//            // Check the elapsed time
-//            long elapsedTime = System.currentTimeMillis() - startTime;
-//            if (elapsedTime > 7000) { // 7000 milliseconds equals 7 seconds
-//                spikePosition = PropPostition.CENTER;
-//                webcam.stopStreaming();
-//                telemetry.addLine("Prop Detected UNKOWN - move to backup plan");
-//                telemetry.addData("Position", spikePosition);
-//                telemetry.update();
-//                break; // Break out of the loop
-//            }
-//            // Telemetry (optional)
-//            telemetry.addData("Frame Count", webcam.getFrameCount());
-//            telemetry.update();
-//        }
-//
-//        runAuton(spikePosition);
-//
-//        //spikePosition = CENTER;
-//        //purplePixelDrop(spikePosition);
-//        //NavigateToBackstage(spikePosition);
-//        //dropYellowPixel();
-//        //ParkBackstage(spikePosition, ParkingLocation.OUT);
-//        telemetry.addData("Path", "Complete");
-//        telemetry.update();
-//        sleep(1000);  // Pause to display last telemetry message.
-//        stopRobot();
-//    }
 
-    public void runAuton(PropPostition  spikePosition){
+        pipeline.startProcessing = true;
+        firstContourDetected = false;
+
+        long startTime = System.currentTimeMillis();
+
+        while (opModeIsActive() && !firstContourDetected) {
+            // Identify on which pixel is the prop on.
+            spikePosition = pipeline.getLastDetectedPosition();
+
+            if (spikePosition != PropPostition.UNKNOWN) {
+                firstContourDetected = true;
+                telemetry.addLine("Prop Detected");
+                telemetry.addData("Position", spikePosition);
+                telemetry.update();
+                //sleep(1000);
+                webcam.stopStreaming();
+            }
+            // Check the elapsed time
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            if (elapsedTime > 7000) { // 7000 milliseconds equals 7 seconds
+                spikePosition = PropPostition.CENTER;
+                webcam.stopStreaming();
+                telemetry.addLine("Prop Detected UNKOWN - move to backup plan");
+                telemetry.addData("Position", spikePosition);
+                telemetry.update();
+                break; // Break out of the loop
+            }
+            // Telemetry (optional)
+            telemetry.addData("Frame Count", webcam.getFrameCount());
+            telemetry.update();
+
+        }
+        parkLocation = OUT;
+        runAuton(spikePosition, parkLocation);
+        sleep(2000);
+    }
+
+    public void runAuton(PropPostition  spikePosition, ParkingLocation parkingLocation){
         PropPostition final_spikePosition = spikePosition;
+        ParkingLocation parkingLocation1 = parkingLocation;
 
         switch (final_spikePosition){
             case UNKNOWN:
@@ -179,39 +173,51 @@ public class RedBackstage extends LinearOpMode {
             case CENTER:
                 telemetry.addLine("CENTER, going for CENTER purple pixel drop");
                 telemetry.update();
-                drive_forward(27,DRIVE_SPEED);
-                intake.setPower(0.4);
-                holdHeading(TURN_IMU_SPEED,0,2.1);
-                drive_backward(1.25, DRIVE_SPEED);
+                drive_forward(28,DRIVE_SPEED);
+                intake.setPower(-0.25);
+                sleep(1250);
+                drive_backward(5, DRIVE_SPEED);
                 intake.setPower(0);
-                drive_backward(0.5, DRIVE_SPEED);
-                turnLeft(94, TURN_IMU_SPEED);
-                drive_backward(40.99, DRIVE_SPEED);
+                strafe_Right(39,STRAFE_SPEED);
+                wristServo.setPosition(0.995);
+                turnLeft(90,TURN_SPEED);
+                drive_backward(7.125,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
                 break;
             case LEFT:
-                drive_forward(28, DRIVE_SPEED);
-                turnLeft(91, TURN_IMU_SPEED);
-                drive_forward(1.5, DRIVE_SPEED);
-                intake.setPower(0.4);
-                holdHeading(TURN_SPEED, 0, 1.55);
-                drive_backward(3, DRIVE_SPEED);
+                telemetry.addLine("CENTER, going for CENTER purple pixel drop");
+                telemetry.update();
+                drive_forward(25,DRIVE_SPEED);
+                strafe_Left(13,STRAFE_SPEED);
+                intake.setPower(-0.25);
+                drive_backward(2,DRIVE_SPEED);
+                sleep(1250);
                 intake.setPower(0);
-                drive_backward(31, DRIVE_SPEED);
-                strafe_Right(6, STRAFE_SPEED);
+                strafe_Right(28, STRAFE_SPEED);
+                wristServo.setPosition(0.995);
+                turnLeft(90,TURN_SPEED);
+                strafe_Right(12, STRAFE_SPEED);
+                drive_backward(24.5,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
                 break;
+
             case RIGHT:
                 drive_forward(2, DRIVE_SPEED);
                 strafe_Right(13.25F, STRAFE_SPEED);
-                drive_forward(22, DRIVE_SPEED);
-                intake.setPower(0.4);
-                holdHeading(TURN_SPEED, 0, 1.25);
-                drive_backward(3, DRIVE_SPEED);
+                drive_forward(17, DRIVE_SPEED);
+                //drive_backward(2, DRIVE_SPEED);
+                intake.setPower(-0.25);
+                sleep(1250);
+                drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                turnLeft(91, TURN_IMU_SPEED);
-                drive_backward(31, DRIVE_SPEED);
+                strafe_Right(26, STRAFE_SPEED);
+                wristServo.setPosition(0.995);
+                turnLeft(90,TURN_SPEED);
+                drive_backward(8.125,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
                 break;
 
         }
@@ -337,7 +343,7 @@ public class RedBackstage extends LinearOpMode {
         rightLinearSlide_motor.setPower(0);
         leftLinearSlide_motor.setPower(0);
 
-        wristServo.setPosition(1);
+        //wristServo.setPosition(1);
         leftWristServo.setPower(-0.995);
         sleep(2000);
         leftWristServo.setPower(0);
@@ -346,7 +352,7 @@ public class RedBackstage extends LinearOpMode {
     private void ParkBackstage(PropPostition spikePosition, ParkingLocation parkLocation) {
         PropPostition spikePosition1 = spikePosition;
         ParkingLocation parkLocation1 = parkLocation;
-
+        wristServo.setPosition(0);
         switch (spikePosition1) {
             case LEFT:
                 //left logic
@@ -356,13 +362,12 @@ public class RedBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
+                        strafe_Right(15, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -30, 0);
+                        strafe_Left(32, STRAFE_SPEED);
                         break;
 
                 }
@@ -375,14 +380,12 @@ public class RedBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
-
+                        strafe_Right(20, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -11, 0);//move away from the backstage
+                        strafe_Left(20, STRAFE_SPEED);
                         break;
 
                 }
@@ -395,12 +398,12 @@ public class RedBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
+                        strafe_Right(30, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -20, 0);
+                        strafe_Left(15, STRAFE_SPEED);
                         break;
 
                 }
@@ -465,7 +468,7 @@ public class RedBackstage extends LinearOpMode {
 
             //initial contour "greater than value" was 10500
             for (MatOfPoint contour : contours) {
-                if (Imgproc.contourArea(contour) > 10000) {
+                if (Imgproc.contourArea(contour) > 12000) {
                     Rect boundingRect = Imgproc.boundingRect(contour);
                     double centerx = boundingRect.x + (boundingRect.width / 2.0);
 
@@ -697,7 +700,6 @@ public class RedBackstage extends LinearOpMode {
     // @return                      Turning power needed to get to required heading.
     // Take separate drive (fwd/rev) and turn (right/left) requests,
     // combines them, and applies the appropriate speed commands to the left and right wheel motors.
-
     public void moveRobot(double drive, double strafe, double turn) {
 
 //        driveSpeed = drive;     // forward/backward
@@ -861,7 +863,6 @@ public class RedBackstage extends LinearOpMode {
         slowDownAtEnd(power);
         setPowerDriveTrain(0);
     }
-
 
     public void turnLeft(double degrees, double power) {
         double robotCircumference = Math.PI * ROBOT_DIAMETER_INCHES;

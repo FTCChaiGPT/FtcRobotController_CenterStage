@@ -27,8 +27,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name="BluePixel", group = "Auto")
-public class BluePixel extends LinearOpMode {
+@Autonomous(name="BlueBackstage_ParkOut", group = "Auto")
+public class BlueBackstage_ParkOut extends LinearOpMode {
 
     public enum PropPostition {
         LEFT, CENTER, RIGHT, UNKNOWN
@@ -82,10 +82,10 @@ public class BluePixel extends LinearOpMode {
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
     private static final double ROBOT_DIAMETER_INCHES = 27; // Adjust to your robot's diameter
     // The distance between the wheels on opposite sides (diagonal)
-    static final double DRIVE_SPEED = 0.9;     // Max driving speed for better distance accuracy.
+    static final double DRIVE_SPEED = 0.8;     // Max driving speed for better distance accuracy.
     static final double TURN_IMU_SPEED = 0.2;
     static final double TURN_SPEED = 0.5;
-    static final double STRAFE_SPEED = 0.5;
+    static final double STRAFE_SPEED = 0.3;
     static final double HEADING_THRESHOLD = 1.0;
     static final double LINEAR_SLIDE_POWER = 0.8;
     static final double LINEAR_SLIDE_TICKS = 25 * COUNTS_PER_INCH; //distance * encoder counts_per_inch
@@ -103,7 +103,6 @@ public class BluePixel extends LinearOpMode {
         telemetry.update();
         CameraInitialization();
         DriveInitialization();
-        //CameraInitialization();
         pipeline.startProcessing = false;
 
         telemetry.addLine("All Initialization Completed");
@@ -118,7 +117,6 @@ public class BluePixel extends LinearOpMode {
         }
 
         waitForStart();
-
 
         pipeline.startProcessing = true;
         firstContourDetected = false;
@@ -152,13 +150,14 @@ public class BluePixel extends LinearOpMode {
             telemetry.update();
 
         }
-
-        runAuton(spikePosition);
+        parkLocation = ParkingLocation.OUT;
+        runAuton(spikePosition, parkLocation);
         sleep(2000);
     }
 
-    public void runAuton(PropPostition  spikePosition){
+    public void runAuton(PropPostition  spikePosition, ParkingLocation parkingLocation){
         PropPostition final_spikePosition = spikePosition;
+        ParkingLocation parkingLocation1 = parkingLocation;
 
         switch (final_spikePosition){
             case UNKNOWN:
@@ -166,65 +165,72 @@ public class BluePixel extends LinearOpMode {
             case CENTER:
                 telemetry.addLine("CENTER, going for CENTER purple pixel drop");
                 telemetry.update();
-                strafe_Right(2, STRAFE_SPEED);
-                drive_forward(28,DRIVE_SPEED);
+                drive_forward(28.5,DRIVE_SPEED);
                 intake.setPower(-0.25);
                 sleep(1250);
                 drive_backward(5, DRIVE_SPEED);
 
                 intake.setPower(0);
-                strafe_Right(20,STRAFE_SPEED);
-                drive_forward(25, DRIVE_SPEED);
-                strafe_Left(115, STRAFE_SPEED);
+                strafe_Left(39,STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_backward(25.5, DRIVE_SPEED);
-                turnRight(86,TURN_SPEED);
-                drive_backward(2.5, DRIVE_SPEED);
+                turnRight(90,TURN_SPEED);
+                strafe_Left(4, STRAFE_SPEED);
+                drive_backward(5.5 ,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(final_spikePosition, parkingLocation1);
+
+//                turnLeft(90, TURN_SPEED);
+//                intake.setPower(0);
+//                //sleep(750);
+//                holdHeading(TURN_IMU_SPEED,-90,2);
+//                wristServo.setPosition(0.995);
+//                drive_backward(40.5, DRIVE_SPEED);
+//                strafe_Right(1.5,STRAFE_SPEED);
+//                holdHeading(TURN_IMU_SPEED,-90,2);
+//                dropYellowPixel();
                 break;
             case LEFT:
-                telemetry.addLine("CENTER, going for CENTER purple pixel drop");
+                telemetry.addLine("LEFT, going for LEFT purple pixel drop");
                 telemetry.update();
                 drive_forward(25,DRIVE_SPEED);
-                strafe_Left(13.25,STRAFE_SPEED);
+                strafe_Left(13,STRAFE_SPEED);
                 intake.setPower(-0.25);
                 sleep(1250);
                 drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                strafe_Right(33,STRAFE_SPEED);
-                drive_forward(28, DRIVE_SPEED);
-                strafe_Left(115, STRAFE_SPEED);
+                strafe_Left(8,STRAFE_SPEED);
+//                drive_backward(5.5, DRIVE_SPEED);
+//                strafe_Right(39, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_backward(33.5, DRIVE_SPEED);
-                turnRight(86,TURN_SPEED);
-                drive_backward(2, DRIVE_SPEED);
+//                drive_forward(2,DRIVE_SPEED);
+                turnRight(90,TURN_SPEED);
+                drive_backward(19,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(final_spikePosition, parkingLocation1);
                 break;
 
             case RIGHT:
-                drive_forward(17, DRIVE_SPEED);
+                drive_forward(25, DRIVE_SPEED);
                 strafe_Right(13.25F, STRAFE_SPEED);
-                drive_forward(4, DRIVE_SPEED);
-                intake.setPower(-0.35);
-                sleep(1350);
-                drive_backward(2, DRIVE_SPEED);
+//                drive_forward(17, DRIVE_SPEED);
+                //drive_backward(2, DRIVE_SPEED);
+                intake.setPower(-0.25);
+                sleep(1250);
+//                drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                strafe_Right(15,STRAFE_SPEED);
-                drive_forward(28, DRIVE_SPEED);
-                strafe_Left(115, STRAFE_SPEED);
+                strafe_Left(28, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_backward(19.5, DRIVE_SPEED);
                 turnRight(90,TURN_SPEED);
-                holdHeading(TURN_SPEED, 90, 0.5);
-                drive_backward(12, DRIVE_SPEED);
+                strafe_Left(13, STRAFE_SPEED);
+                drive_backward(26,DRIVE_SPEED); //8.125
                 dropYellowPixel();
+                ParkBackstage(final_spikePosition, parkingLocation1);
                 break;
 
         }
     }
 
     //FUNCTIONS PURPLE PIXEL DROP, NAVIGATE TO BACKSTAGE, AND PARK BACKSTAGE ARE NOT BEING USED... (below...)
-
     public void purplePixelDrop(PropPostition spikePosition){
         PropPostition spikePosition1 = spikePosition;
         switch (spikePosition1) {
@@ -325,7 +331,6 @@ public class BluePixel extends LinearOpMode {
                 break;
         }
     }
-
     public void dropYellowPixel(){
         linearSlideTimer.reset();
         rightLinearSlide_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -354,7 +359,7 @@ public class BluePixel extends LinearOpMode {
     private void ParkBackstage(PropPostition spikePosition, ParkingLocation parkLocation) {
         PropPostition spikePosition1 = spikePosition;
         ParkingLocation parkLocation1 = parkLocation;
-
+        wristServo.setPosition(0);
         switch (spikePosition1) {
             case LEFT:
                 //left logic
@@ -364,13 +369,12 @@ public class BluePixel extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
+                        strafe_Left(34, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -30, 0);
+                        strafe_Right(13, STRAFE_SPEED);
                         break;
 
                 }
@@ -383,14 +387,12 @@ public class BluePixel extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
-
+                        strafe_Left(20, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -11, 0);//move away from the backstage
+                        strafe_Right(20, STRAFE_SPEED);
                         break;
 
                 }
@@ -403,12 +405,12 @@ public class BluePixel extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
+                        strafe_Left(15, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -20, 0);
+                        strafe_Right(30, STRAFE_SPEED);
                         break;
 
                 }
@@ -461,8 +463,8 @@ public class BluePixel extends LinearOpMode {
             Mat hsvImage = new Mat();//
             Imgproc.cvtColor(input, hsvImage, Imgproc.COLOR_RGB2HSV);
 
-            Scalar lowerBlue = new Scalar(90, 50, 50);
-            Scalar upperBlue = new Scalar(140,255,255);
+            Scalar lowerBlue = new Scalar(90, 50, 50); //40,30,30 //90,50,50
+            Scalar upperBlue = new Scalar(140,255,255); //140,255,255 //180,255,255
             Mat PropMask = new Mat();
             Core.inRange(hsvImage, lowerBlue, upperBlue, PropMask);
 
@@ -470,7 +472,7 @@ public class BluePixel extends LinearOpMode {
             Mat hierachy = new Mat();
             Imgproc.findContours(PropMask, contours, hierachy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-            //initial contour "greater than value" was 10500
+            //initial contour "greater than value" was 10500, then it was 10000
             for (MatOfPoint contour : contours) {
                 if (Imgproc.contourArea(contour) > 12000) {
                     Rect boundingRect = Imgproc.boundingRect(contour);
@@ -868,7 +870,6 @@ public class BluePixel extends LinearOpMode {
         slowDownAtEnd(power);
         setPowerDriveTrain(0);
     }
-
 
     public void turnLeft(double degrees, double power) {
         double robotCircumference = Math.PI * ROBOT_DIAMETER_INCHES;

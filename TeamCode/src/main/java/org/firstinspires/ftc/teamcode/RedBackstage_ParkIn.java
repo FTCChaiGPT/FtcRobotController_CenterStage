@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,8 +28,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name="BlueGyro", group = "Auto")
-public class BlueBackstage extends LinearOpMode {
+@Autonomous(name="RedBackstage_ParkIn", group = "Auto")
+public class RedBackstage_ParkIn extends LinearOpMode {
 
     public enum PropPostition {
         LEFT, CENTER, RIGHT, UNKNOWN
@@ -156,12 +157,14 @@ public class BlueBackstage extends LinearOpMode {
             telemetry.update();
 
         }
-        runAuton(spikePosition);
+        parkLocation = ParkingLocation.IN;
+        runAuton(spikePosition, parkLocation);
         sleep(2000);
     }
 
-    public void runAuton(PropPostition  spikePosition){
+    public void runAuton(PropPostition  spikePosition, ParkingLocation parkingLocation){
         PropPostition final_spikePosition = spikePosition;
+        ParkingLocation parkingLocation1 = parkingLocation;
 
         switch (final_spikePosition){
             case UNKNOWN:
@@ -173,62 +176,52 @@ public class BlueBackstage extends LinearOpMode {
                 intake.setPower(-0.25);
                 sleep(1250);
                 drive_backward(5, DRIVE_SPEED);
-
                 intake.setPower(0);
                 strafe_Right(39,STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                turnRight(90,TURN_SPEED);
-                drive_backward(5.125,DRIVE_SPEED);
+                turnLeft(90,TURN_SPEED);
+                drive_backward(7.125,DRIVE_SPEED);
                 dropYellowPixel();
-
-//                turnLeft(90, TURN_SPEED);
-//                intake.setPower(0);
-//                //sleep(750);
-//                holdHeading(TURN_IMU_SPEED,-90,2);
-//                wristServo.setPosition(0.995);
-//                drive_backward(40.5, DRIVE_SPEED);
-//                strafe_Right(1.5,STRAFE_SPEED);
-//                holdHeading(TURN_IMU_SPEED,-90,2);
-//                dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
                 break;
             case LEFT:
-                telemetry.addLine("LEFT, going for LEFT purple pixel drop");
-                telemetry.update();
-                drive_forward(28, DRIVE_SPEED);
-                turnLeft(91, TURN_IMU_SPEED);
-                drive_forward(1.5, DRIVE_SPEED);
-                intake.setPower(0.4);
-                holdHeading(TURN_SPEED, 0, 1.55);
-                drive_backward(3, DRIVE_SPEED);
-                intake.setPower(0);
-                drive_backward(31, DRIVE_SPEED);
-                strafe_Right(6, STRAFE_SPEED);
-                dropYellowPixel();
-                break;
-
-            case RIGHT:
-                telemetry.addLine("RIGHT, going for RIGHT purple pixel drop");
+                telemetry.addLine("CENTER, going for CENTER purple pixel drop");
                 telemetry.update();
                 drive_forward(25,DRIVE_SPEED);
                 strafe_Left(13,STRAFE_SPEED);
                 intake.setPower(-0.25);
+                drive_backward(2,DRIVE_SPEED);
+                sleep(1250);
+                intake.setPower(0);
+                strafe_Right(28, STRAFE_SPEED);
+                wristServo.setPosition(0.995);
+                turnLeft(90,TURN_SPEED);
+                strafe_Right(12, STRAFE_SPEED);
+                drive_backward(24.5,DRIVE_SPEED);
+                dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
+                break;
+
+            case RIGHT:
+                drive_forward(2, DRIVE_SPEED);
+                strafe_Right(13.25F, STRAFE_SPEED);
+                drive_forward(17, DRIVE_SPEED);
+                //drive_backward(2, DRIVE_SPEED);
+                intake.setPower(-0.25);
                 sleep(1250);
                 drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                strafe_Left(8,STRAFE_SPEED);
-//                drive_backward(5.5, DRIVE_SPEED);
-//                strafe_Right(39, STRAFE_SPEED);
+                strafe_Right(26, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_forward(2,DRIVE_SPEED);
-                turnRight(90,TURN_SPEED);
-                drive_backward(28,DRIVE_SPEED);
+                turnLeft(90,TURN_SPEED);
+                drive_backward(8.125,DRIVE_SPEED);
                 dropYellowPixel();
+                ParkBackstage(spikePosition, parkingLocation1);
                 break;
 
         }
     }
 
-    //FUNCTIONS PURPLE PIXEL DROP, NAVIGATE TO BACKSTAGE, AND PARK BACKSTAGE ARE NOT BEING USED... (below...)
     public void purplePixelDrop(PropPostition spikePosition){
         PropPostition spikePosition1 = spikePosition;
         switch (spikePosition1) {
@@ -329,6 +322,7 @@ public class BlueBackstage extends LinearOpMode {
                 break;
         }
     }
+
     public void dropYellowPixel(){
         linearSlideTimer.reset();
         rightLinearSlide_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -357,7 +351,7 @@ public class BlueBackstage extends LinearOpMode {
     private void ParkBackstage(PropPostition spikePosition, ParkingLocation parkLocation) {
         PropPostition spikePosition1 = spikePosition;
         ParkingLocation parkLocation1 = parkLocation;
-
+        wristServo.setPosition(0);
         switch (spikePosition1) {
             case LEFT:
                 //left logic
@@ -367,13 +361,12 @@ public class BlueBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
+                        strafe_Right(15, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -30, 0);
+                        strafe_Left(32, STRAFE_SPEED);
                         break;
 
                 }
@@ -386,14 +379,12 @@ public class BlueBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
-
-
+                        strafe_Right(20, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -11, 0);//move away from the backstage
+                        strafe_Left(20, STRAFE_SPEED);
                         break;
 
                 }
@@ -406,12 +397,12 @@ public class BlueBackstage extends LinearOpMode {
                     case IN:
                         telemetry.addLine("Park IN");
                         telemetry.update();
+                        strafe_Right(30, STRAFE_SPEED);
                         break;
                     case OUT:
                         telemetry.addLine("Park OUT");
                         telemetry.update();
-                        driveStraight(DRIVE_SPEED, 3, 0);
-                        strafe(STRAFE_SPEED, -20, 0);
+                        strafe_Left(15, STRAFE_SPEED);
                         break;
 
                 }
@@ -464,10 +455,11 @@ public class BlueBackstage extends LinearOpMode {
             Mat hsvImage = new Mat();//
             Imgproc.cvtColor(input, hsvImage, Imgproc.COLOR_RGB2HSV);
 
-            Scalar lowerBlue = new Scalar(90, 50, 50);
-            Scalar upperBlue = new Scalar(140,255,255);
+            Scalar lowerRed = new Scalar(0, 50, 50); //Dec 2 values: (middle unit was 150)
+            Scalar upperRed = new Scalar(10, 255, 255); //Dec 2 values: (first unit was 20)
+            //otherwise test (160 and 180 for the first unit)
             Mat PropMask = new Mat();
-            Core.inRange(hsvImage, lowerBlue, upperBlue, PropMask);
+            Core.inRange(hsvImage, lowerRed, upperRed, PropMask);
 
             List<MatOfPoint> contours = new ArrayList<>();
             Mat hierachy = new Mat();
@@ -475,7 +467,7 @@ public class BlueBackstage extends LinearOpMode {
 
             //initial contour "greater than value" was 10500
             for (MatOfPoint contour : contours) {
-                if (Imgproc.contourArea(contour) > 10000) {
+                if (Imgproc.contourArea(contour) > 12000) {
                     Rect boundingRect = Imgproc.boundingRect(contour);
                     double centerx = boundingRect.x + (boundingRect.width / 2.0);
 
@@ -707,7 +699,6 @@ public class BlueBackstage extends LinearOpMode {
     // @return                      Turning power needed to get to required heading.
     // Take separate drive (fwd/rev) and turn (right/left) requests,
     // combines them, and applies the appropriate speed commands to the left and right wheel motors.
-
     public void moveRobot(double drive, double strafe, double turn) {
 
 //        driveSpeed = drive;     // forward/backward

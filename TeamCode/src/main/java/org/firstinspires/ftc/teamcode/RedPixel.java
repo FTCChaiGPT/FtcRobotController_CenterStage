@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.function.ThrowingRunnable;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -119,7 +120,7 @@ public class RedPixel extends LinearOpMode {
 
         waitForStart();
 //        spikePosition = PropPostition.RIGHT;
-//
+
 
 
 //        telemetry.clear();
@@ -156,7 +157,6 @@ public class RedPixel extends LinearOpMode {
             telemetry.update();
 
         }
-        spikePosition = PropPostition.LEFT;
         runAuton(spikePosition);
         sleep(2000);
     }
@@ -170,64 +170,58 @@ public class RedPixel extends LinearOpMode {
             case CENTER:
                 telemetry.addLine("CENTER, going for CENTER purple pixel drop");
                 telemetry.update();
-                drive_forward(26,DRIVE_SPEED); //28
+                strafe_Right(2, STRAFE_SPEED);
+                drive_forward(28,DRIVE_SPEED);
                 intake.setPower(-0.25);
                 sleep(1250);
-                drive_backward(12, DRIVE_SPEED);
+                drive_backward(5, DRIVE_SPEED);
 
                 intake.setPower(0);
                 strafe_Left(20,STRAFE_SPEED);
-                drive_forward(32, DRIVE_SPEED);
+                drive_forward(25, DRIVE_SPEED);
                 strafe_Right(115, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_backward(25, DRIVE_SPEED);
-                turnLeft(90,TURN_SPEED);
-                drive_backward(4.5,DRIVE_SPEED);
+                drive_backward(25.5, DRIVE_SPEED);
+                turnLeft(86,TURN_SPEED);
+                drive_backward(1, DRIVE_SPEED);
                 dropYellowPixel();
-//                turnLeft(90, TURN_SPEED);
-//                intake.setPower(0);
-//                //sleep(750);
-//                holdHeading(TURN_IMU_SPEED,-90,2);
-//                wristServo.setPosition(0.995);
-//                drive_backward(40.5, DRIVE_SPEED);
-//                strafe_Right(1.5,STRAFE_SPEED);
-//                holdHeading(TURN_IMU_SPEED,-90,2);
-//                dropYellowPixel();
                 break;
+
             case LEFT:
                 telemetry.addLine("CENTER, going for CENTER purple pixel drop");
                 telemetry.update();
-                drive_forward(24,DRIVE_SPEED);
-                strafe_Left(13,STRAFE_SPEED);
+                drive_forward(23,DRIVE_SPEED);
+                strafe_Left(13.25,STRAFE_SPEED);
                 intake.setPower(-0.25);
                 sleep(1250);
                 drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                strafe_Right(13,STRAFE_SPEED); //14
-                drive_forward(26.75F,DRIVE_SPEED);
-                strafe_Right(91,STRAFE_SPEED); //90
-//                drive_backward(5.5, DRIVE_SPEED);
-//                strafe_Right(39, STRAFE_SPEED);
+                strafe_Left(9,STRAFE_SPEED);
+                drive_forward(28, DRIVE_SPEED);
+                strafe_Right(115, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                drive_backward(21,DRIVE_SPEED); //22
-                turnLeft(90,TURN_SPEED);
-                drive_backward(8.2,DRIVE_SPEED);
+                drive_backward(27, DRIVE_SPEED);
+                turnLeft(86,TURN_SPEED);
+                drive_backward(6, DRIVE_SPEED);
                 dropYellowPixel();
                 break;
 
             case RIGHT:
-                drive_forward(2, DRIVE_SPEED);
-                strafe_Right(13.25F, STRAFE_SPEED);
-                drive_forward(17, DRIVE_SPEED);
+                drive_forward(25, DRIVE_SPEED);
+                strafe_Right(13, STRAFE_SPEED);
                 //drive_backward(2, DRIVE_SPEED);
-                intake.setPower(-0.25);
+                intake.setPower(-0.4);
                 sleep(1250);
-                drive_backward(2, DRIVE_SPEED);
                 intake.setPower(0);
-                strafe_Right(26, STRAFE_SPEED);
+                strafe_Left(24.5, STRAFE_SPEED);
+                drive_forward(22, DRIVE_SPEED);
+                strafe_Right(105, STRAFE_SPEED);
                 wristServo.setPosition(0.995);
-                turnLeft(90,TURN_SPEED);
-                drive_backward(8.125,DRIVE_SPEED);
+                drive_backward(29,DRIVE_SPEED); //22
+                turnLeft(86,TURN_SPEED);
+                drive_backward(6 ,DRIVE_SPEED);
+                telemetry.addLine("Wrist Position::"+ wristServo.getPosition());
+                telemetry.update();
                 dropYellowPixel();
                 break;
 
@@ -482,7 +476,7 @@ public class RedPixel extends LinearOpMode {
 
             //initial contour "greater than value" was 10500
             for (MatOfPoint contour : contours) {
-                if (Imgproc.contourArea(contour) > 10000) {
+                if (Imgproc.contourArea(contour) > 12000) {
                     Rect boundingRect = Imgproc.boundingRect(contour);
                     double centerx = boundingRect.x + (boundingRect.width / 2.0);
 
